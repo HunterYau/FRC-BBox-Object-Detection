@@ -1,0 +1,5 @@
+# Pinned to a stable official build with Python 3.12 and TFLite support.
+tensorflow==2.19.0
+numpy>=1.26,<2.2
+Pillow>=10.2
+matplotlib>=3.8

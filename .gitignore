@@ -1,0 +1,12 @@
+.venv/
+.idea/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+data/
+artifacts/
+*.tflite
+*.keras
+*.weights.h5
+
