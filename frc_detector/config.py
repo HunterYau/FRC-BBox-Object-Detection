@@ -1,4 +1,8 @@
-"""All commonly edited training parameters live in this file."""
+"""Training settings used when ``train.py`` is run from an IDE.
+
+Edit the values in the clearly marked section below, then run ``train.py``.
+The dataclasses farther down provide the complete set of advanced settings.
+"""
 
 from __future__ import annotations
 
@@ -7,26 +11,61 @@ from pathlib import Path
 from typing import Any
 
 
+# =============================================================================
+# EDIT THESE SETTINGS, THEN CLICK RUN ON train.py
+# =============================================================================
+
+# Dataset paths (COCO JSON annotations and their matching image folders).
+TRAIN_ANNOTATIONS = "data/train/_annotations.coco.json"
+TRAIN_IMAGES = "data/train"
+VALIDATION_ANNOTATIONS = "data/valid/_annotations.coco.json"
+VALIDATION_IMAGES = "data/valid"
+
+# Data loading. -1 lets TensorFlow choose the number of workers/prefetch batches.
+BATCH_SIZE = 2
+NUM_WORKERS = -1
+PREFETCH_BATCHES = -1
+
+# Main training choices.
+EPOCHS = 100
+INITIAL_LEARNING_RATE = 2e-4
+OUTPUT_DIR = "artifacts/frc_detector"
+AUTO_RESUME = True
+MIXED_PRECISION = False
+
+# Use "imagenet" for pretrained weights or None to start with random weights.
+BACKBONE_WEIGHTS: str | None = "imagenet"
+
+# Input resolutions. Images keep their aspect ratio.
+TRAIN_SHORT_SIDES = (480, 512, 544, 576, 608, 640, 704, 768)
+VALIDATION_SHORT_SIDE = 640
+MAX_LONG_SIDE = 1280
+
+# =============================================================================
+# ADVANCED SETTINGS
+# =============================================================================
+
+
 @dataclass
 class DataConfig:
     # COCO paths. Image file names are resolved relative to the matching folder.
-    train_annotations: str = "data/train/_annotations.coco.json"
-    train_images: str = "data/train"
-    validation_annotations: str = "data/valid/_annotations.coco.json"
-    validation_images: str = "data/valid"
+    train_annotations: str = TRAIN_ANNOTATIONS
+    train_images: str = TRAIN_IMAGES
+    validation_annotations: str = VALIDATION_ANNOTATIONS
+    validation_images: str = VALIDATION_IMAGES
 
-    batch_size: int = 2
+    batch_size: int = BATCH_SIZE
     # -1 means tf.data.AUTOTUNE. Set a positive value to cap parallel mapping.
-    num_workers: int = -1
-    prefetch_batches: int = -1
+    num_workers: int = NUM_WORKERS
+    prefetch_batches: int = PREFETCH_BATCHES
     shuffle_buffer: int = 2048
     cache_validation: bool = False
 
     # The aspect ratio is never distorted. A short-side size is sampled each
     # training image; images are then padded to the largest H/W in that batch.
-    train_short_sides: tuple[int, ...] = (480, 512, 544, 576, 608, 640, 704, 768)
-    validation_short_side: int = 640
-    max_long_side: int = 1280
+    train_short_sides: tuple[int, ...] = TRAIN_SHORT_SIDES
+    validation_short_side: int = VALIDATION_SHORT_SIDE
+    max_long_side: int = MAX_LONG_SIDE
     pad_to_multiple: int = 32
 
     include_crowd: bool = False
@@ -63,7 +102,7 @@ class AugmentationConfig:
 @dataclass
 class ModelConfig:
     backbone: str = "mobilenet_v2"
-    backbone_weights: str | None = "imagenet"
+    backbone_weights: str | None = BACKBONE_WEIGHTS
     fpn_channels: int = 128
     head_depth: int = 3
     head_channels: int = 128
@@ -80,15 +119,15 @@ class ModelConfig:
 
 @dataclass
 class TrainingConfig:
-    epochs: int = 100
-    initial_learning_rate: float = 2e-4
+    epochs: int = EPOCHS
+    initial_learning_rate: float = INITIAL_LEARNING_RATE
     minimum_learning_rate_ratio: float = 0.03
     warmup_epochs: int = 3
     weight_decay: float = 1e-4
     gradient_clip_norm: float = 10.0
-    mixed_precision: bool = False
+    mixed_precision: bool = MIXED_PRECISION
     early_stopping_patience: int = 15
-    auto_resume: bool = True
+    auto_resume: bool = AUTO_RESUME
 
     focal_alpha: float = 0.25
     focal_gamma: float = 2.0
@@ -100,7 +139,7 @@ class TrainingConfig:
     nms_iou_threshold: float = 0.60
     max_detections: int = 100
 
-    output_dir: str = "artifacts/frc_detector"
+    output_dir: str = OUTPUT_DIR
     checkpoint_keep: int = 5
 
 
@@ -120,4 +159,3 @@ class ExperimentConfig:
 
 
 CONFIG = ExperimentConfig()
-

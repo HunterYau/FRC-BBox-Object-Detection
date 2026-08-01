@@ -294,7 +294,8 @@ class Trainer:
         self._write_metadata()
         if start_epoch >= self.config.training.epochs:
             print(
-                f"Checkpoint already completed {start_epoch} epochs; increase EPOCHS or pass --epochs."
+                f"Checkpoint already completed {start_epoch} epochs; "
+                "increase EPOCHS in frc_detector/config.py."
             )
 
         for epoch_index in range(start_epoch, self.config.training.epochs):
@@ -340,4 +341,3 @@ class Trainer:
         print(f"Saved reloadable best model to {model_path}")
         print(f"Latest resumable training state: {self.checkpoint_manager.latest_checkpoint}")
         return model_path
-

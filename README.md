@@ -6,12 +6,12 @@ The input is genuinely dynamic: images keep their aspect ratio, a different shor
 
 ## Project layout
 
-- `frc_detector/config.py` — all commonly changed paths, batch sizes, workers, resolutions, augmentation probabilities, model sizes, optimizer, loss, and validation settings.
+- `frc_detector/config.py` — the easy-to-edit training settings, including paths, batch size, workers, resolutions, model, optimizer, loss, and validation settings.
 - `frc_detector/coco.py` and `augment.py` — validated COCO loading and box-aware input transforms.
 - `frc_detector/model.py` and `losses.py` — MobileNetV2-FPN-FCOS architecture and training targets/losses.
 - `frc_detector/trainer.py` and `metrics.py` — AdamW training, warmup/cosine schedule, resume checkpoints, early stopping, and COCO-style mAP.
 - `frc_detector/inference.py` — decoding, NMS, TFLite runtime wrapper, truth matching, and plots.
-- `train.py`, `predict.py`, and `export_tflite.py` — command-line entry points.
+- `train.py` — an IDE-friendly training entry point; `predict.py` and `export_tflite.py` are utility scripts.
 
 ## Dataset layout
 
@@ -41,19 +41,23 @@ The project interpreter is `.venv/Scripts/python.exe`. In PyCharm, open **Settin
 
 On native Windows, current TensorFlow training is CPU-only. An NVIDIA GPU requires WSL2; keep the project in the Linux filesystem for good I/O performance and install the appropriate TensorFlow CUDA extras there. Apple and Linux TensorFlow installations follow their platform-specific package instructions.
 
-## Train and resume
+## Train and resume in PyCharm
 
-Edit `frc_detector/config.py`, or override the most common values on the command line:
+1. Open `frc_detector/config.py`.
+2. Change the values in the `EDIT THESE SETTINGS` section at the top. This is
+   where `BATCH_SIZE`, `NUM_WORKERS`, `EPOCHS`, dataset paths, output folder,
+   resume behavior, pretrained weights, and the main image sizes live.
+3. Open `train.py`, right-click in the editor, and select **Run 'train'**. You
+   can also use the green Run button after the run configuration is created.
+   Leave **Script parameters** empty; training does not read command-line
+   arguments.
 
-```powershell
-.\.venv\Scripts\python.exe train.py
-```
-
-```powershell
-.\.venv\Scripts\python.exe train.py --batch-size 4 --epochs 150 --output-dir artifacts\robot_2026
-```
-
-Training automatically resumes from `artifacts/frc_detector/checkpoints/`. A checkpoint stores the model, AdamW state, learning-rate step, completed epoch, and best mAP. To intentionally start a fresh run, use a new output folder or `--no-resume`. If ImageNet weights cannot be downloaded, `--no-imagenet` uses random backbone initialization (usually slower and less accurate).
+Training automatically resumes from the configured output folder when
+`AUTO_RESUME = True`. A checkpoint stores the model, AdamW state,
+learning-rate step, completed epoch, and best mAP. To intentionally start a
+fresh run, set `AUTO_RESUME = False` and use a new `OUTPUT_DIR`. If ImageNet
+weights cannot be downloaded, set `BACKBONE_WEIGHTS = None` to use random
+backbone initialization (usually slower and less accurate).
 
 Outputs:
 
